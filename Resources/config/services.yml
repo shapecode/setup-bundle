@@ -1,0 +1,10 @@
+parameters:
+  shapecode_setup.command.setup.class: Shapecode\Bundle\SetupBundle\Command\SetupCommand
+  shapecode_setup.command.setup.name: "shapecode:setup"
+
+services:
+    shapecode_setup.command.setup:
+        class: %shapecode_setup.command.setup.class%
+        tags:
+            -  { name: console.command }
+        arguments: [%shapecode_setup.command.setup.name%, @service_container]
