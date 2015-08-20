@@ -2,9 +2,15 @@ parameters:
   shapecode_setup.command.setup.class: Shapecode\Bundle\SetupBundle\Command\SetupCommand
   shapecode_setup.command.setup.name: "shapecode:setup"
 
+  shapecode_setup.reference_manager.class: Shapecode\Bundle\SetupBundle\Setup\ReferenceManager
+
 services:
     shapecode_setup.command.setup:
         class: %shapecode_setup.command.setup.class%
         tags:
             -  { name: console.command }
         arguments: [%shapecode_setup.command.setup.name%, @service_container]
+
+    shapecode_setup.reference_manager:
+        class: %shapecode_setup.reference_manager.class%
+        arguments: [@doctrine.orm.entity_manager]

@@ -3,11 +3,12 @@
 namespace Shapecode\Bundle\SetupBundle\Command;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Shapecode\Bundle\SetupBundle\Command\Setup\SetupInterface;
+use Shapecode\Bundle\SetupBundle\Model\CommandMeta;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -20,6 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class SetupCommand extends Command
 {
+
     /** @var ContainerInterface */
     protected $container;
 
@@ -44,6 +46,16 @@ class SetupCommand extends Command
     protected function configure()
     {
         $this->setDescription('Greet someone');
+
+        $this->configureOptions();
+    }
+
+    /**
+     *
+     */
+    protected function configureOptions()
+    {
+        $this->addOption('setup', null, InputOption::VALUE_REQUIRED, 'Which Setup should executed?', 'default');
     }
 
     /**
@@ -51,8 +63,13 @@ class SetupCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!$this->getCommands()->count()) {
+        $name = $input->getOption('setup');
+
+        $commandSet = $this->getCommandSet($name);
+
+        if (!$commandSet->count()) {
             $output->writeln('Keine Installations-Routinen vorhanden.');
+
             return;
         }
 
@@ -66,9 +83,17 @@ class SetupCommand extends Command
             $output->writeln('exiting ...');
         }
 
-        foreach ($this->getCommands() as $command) {
+        $iterator = $commandSet->getIterator();
+        $iterator->uasort(function (CommandMeta $a, CommandMeta $b) {
+            return ($a->getPriority() < $b->getPriority()) ? -1 : 1;
+        });
+        $commandSet = new ArrayCollection(iterator_to_array($iterator));
 
-            $commandI = new ArrayInput(array());
+        /** @var CommandMeta $meta */
+        foreach ($commandSet as $meta) {
+            $command = $meta->getCommand();
+
+            $commandI = new ArrayInput($meta->getArguments()->toArray());
             $command->run($commandI, $output);
         }
     }
@@ -82,7 +107,7 @@ class SetupCommand extends Command
     }
 
     /**
-     * @return ArrayCollection|Command[]
+     * @return ArrayCollection|ArrayCollection[]
      */
     public function getCommands()
     {
@@ -90,15 +115,28 @@ class SetupCommand extends Command
     }
 
     /**
-     * @param Command $command
+     * @return ArrayCollection|Command[]
      */
-    public function addCommand(Command $command)
+    public function getCommandSet($name)
     {
-//        if (!($command instanceof SetupInterface)) {
-//            throw new \RuntimeException('command must implement SetupInterface');
-//        }
+        return $this->getCommands()->get($name);
+    }
 
-        $this->commands->add($command);
+    /**
+     * @param $name
+     * @param Command $command
+     * @param $arguments
+     * @param $priority
+     */
+    public function addCommand($name, Command $command, $arguments, $priority)
+    {
+        if (!$this->commands->containsKey($name)) {
+            $this->commands->set($name, new ArrayCollection());
+        }
+
+        $meta = new CommandMeta($command, $arguments, $priority);
+
+        $this->commands->get($name)->add($meta);
     }
 
 }

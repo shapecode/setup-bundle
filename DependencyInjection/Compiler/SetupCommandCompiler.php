@@ -2,8 +2,8 @@
 
 namespace Shapecode\Bundle\SetupBundle\DependencyInjection\Compiler;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -26,8 +26,15 @@ class SetupCommandCompiler implements CompilerPassInterface
 
         foreach ($container->findTaggedServiceIds('shapecode_setup.routine') as $id => $params) {
             foreach ($params as $param) {
+                $arguments = (isset($param['arguments'])) ? $param['arguments'] : null;
+                $priority = (isset($param['priority'])) ? $param['priority'] : 0;
+                $setup = (isset($param['setup'])) ? $param['setup'] : 'default';
+
                 $definition->addMethodCall('addCommand', array(
-                    new Reference($id)
+                    $setup,
+                    new Reference($id),
+                    $arguments,
+                    $priority
                 ));
             }
         }
