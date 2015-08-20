@@ -56,6 +56,7 @@ class SetupCommand extends Command
     protected function configureOptions()
     {
         $this->addOption('setup', null, InputOption::VALUE_REQUIRED, 'Which Setup should executed?', 'default');
+        $this->addOption('force', null, InputOption::VALUE_NONE, 'Which Setup should executed?');
     }
 
     /**
@@ -64,23 +65,26 @@ class SetupCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $name = $input->getOption('setup');
+        $force = $input->getOption('force');
 
-        $commandSet = $this->getCommandSet($name);
-
-        if (!$commandSet->count()) {
-            $output->writeln('Keine Installations-Routinen vorhanden.');
+        if (!$this->hasCommandSet($name) || !$this->getCommandSet($name)->count()) {
+            $output->writeln('there is no setup script.');
 
             return;
         }
 
+        $commandSet = $this->getCommandSet($name);
+
         /** @var QuestionHelper $helper */
         $helper = $this->getHelperSet()->get('question');
 
-        $question = new Question('Do you want to fire up setup? (y/n)');
-        $yesno = $helper->ask($input, $output, $question);
+        if (!$force) {
+            $question = new Question('Do you want to fire up setup? (y/n)');
+            $yesno = $helper->ask($input, $output, $question);
 
-        if ($yesno != 'y') {
-            $output->writeln('exiting ...');
+            if ($yesno != 'y') {
+                $output->writeln('exiting ...');
+            }
         }
 
         $iterator = $commandSet->getIterator();
@@ -93,7 +97,10 @@ class SetupCommand extends Command
         foreach ($commandSet as $meta) {
             $command = $meta->getCommand();
 
-            $commandI = new ArrayInput($meta->getArguments()->toArray());
+            $inputArray = array_replace_recursive($meta->getArguments()->toArray(), array(
+                'command' => $command->getName()
+            ));
+            $commandI = new ArrayInput($inputArray);
             $command->run($commandI, $output);
         }
     }
@@ -120,6 +127,15 @@ class SetupCommand extends Command
     public function getCommandSet($name)
     {
         return $this->getCommands()->get($name);
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function hasCommandSet($name)
+    {
+        return $this->getCommands()->containsKey($name);
     }
 
     /**
