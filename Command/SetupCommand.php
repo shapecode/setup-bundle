@@ -97,6 +97,9 @@ class SetupCommand extends Command
         foreach ($commandSet as $meta) {
             $command = $meta->getCommand();
 
+            $output->writeln('');
+            $output->writeln('execute command "'.$command->getName().'":');
+
             $inputArray = array_replace_recursive($meta->getArguments()->toArray(), array(
                 'command' => $command->getName()
             ));
