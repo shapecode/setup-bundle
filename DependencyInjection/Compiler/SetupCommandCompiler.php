@@ -27,7 +27,7 @@ class SetupCommandCompiler implements CompilerPassInterface
         foreach ($container->findTaggedServiceIds('shapecode_setup.routine') as $id => $params) {
             foreach ($params as $param) {
                 $arguments = (isset($param['arguments'])) ? $param['arguments'] : null;
-                $priority = (isset($param['priority'])) ? $param['priority'] : 0;
+                $priority = (isset($param['priority'])) ? $param['priority'] : 10;
                 $setup = (isset($param['setup'])) ? $param['setup'] : 'default';
 
                 $definition->addMethodCall('addCommand', array(
