@@ -40,10 +40,5 @@
         "psr-4": {
             "Shapecode\\Bundle\\SetupBundle\\": ""
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-develop": "0.1-dev"
-        }
     }
 }
