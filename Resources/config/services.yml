@@ -9,8 +9,8 @@ services:
         class: %shapecode_setup.command.setup.class%
         tags:
             -  { name: console.command }
-        arguments: [%shapecode_setup.command.setup.name%, @service_container]
+        arguments: [%shapecode_setup.command.setup.name%, "@service_container"]
 
     shapecode_setup.reference_manager:
         class: %shapecode_setup.reference_manager.class%
-        arguments: [@doctrine.orm.entity_manager]
+        arguments: ["@doctrine.orm.entity_manager"]

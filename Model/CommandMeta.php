@@ -36,7 +36,6 @@ class CommandMeta
         $arguments = trim($arguments);
         if (!empty($arguments)) {
             $arguments = array_filter(array_map('trim', explode(' ', $arguments)), 'strlen');
-            var_dump($arguments);
             $this->arguments = new ArrayCollection($arguments);
         }
     }
