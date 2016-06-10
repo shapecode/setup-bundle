@@ -12,12 +12,12 @@
     ],
     "type": "symfony-bundle",
     "license": "MIT",
-    "homepage": "http://shapecode.de",
+    "homepage": "https://github.com/shapecode/setup-bundle",
     "support": {
-        "email": "support@nikita-loges.de",
-        "issues": "https://bitbucket.org/shapecode/symfony-setup-bundle/issues",
-        "source": "https://bitbucket.org/shapecode/symfony-setup-bundle/downloads",
-        "wiki": "https://bitbucket.org/shapecode/symfony-setup-bundle/wiki/Home"
+        "email": "support@shapecode.de",
+        "issues": "https://github.com/shapecode/setup-bundle/issues",
+        "source": "https://github.com/shapecode/setup-bundle/releases",
+        "wiki": "https://github.com/shapecode/setup-bundle/wiki"
     },
     "authors": [
         {
@@ -27,18 +27,35 @@
         }
     ],
     "require": {
-        "php": ">=5.5.9",
+        "php": "~5.5|~7.0",
+
         "symfony/dependency-injection": "~2.8|~3.0",
         "symfony/http-kernel": "~2.8|~3.0",
         "symfony/config": "~2.8|~3.0",
         "symfony/console": "~2.8|~3.0",
+
         "doctrine/orm": "~2.5",
         "doctrine/common": "~2.6",
         "doctrine/doctrine-bundle": "~1.6"
     },
+    "require-dev": {
+        "phpunit/phpunit": "~5.0"
+    },
     "autoload": {
         "psr-4": {
-            "Shapecode\\Bundle\\SetupBundle\\": ""
+            "Shapecode\\Bundle\\SetupBundle\\": "src/"
         }
-    }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Shapecode\\Bundle\\SetupBundle\\Tests": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-release/0.1": "0.1-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
