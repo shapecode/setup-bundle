@@ -8,8 +8,9 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
  * Class ShapecodeSetupBundle
+ *
  * @package Shapecode\Bundle\InstallationBundle
- * @author Nikita Loges
+ * @author  Nikita Loges
  */
 class ShapecodeSetupBundle extends Bundle
 {

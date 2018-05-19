@@ -4,12 +4,12 @@ namespace Shapecode\Bundle\SetupBundle\Setup;
 
 /**
  * Interface ReferenceManagerInterface
+ *
  * @package Shapecode\Bundle\SetupBundle\Setup
- * @author Nikita Loges
+ * @author  Nikita Loges
  */
 interface ReferenceManagerInterface
 {
-
 
     /**
      * @param $name
@@ -25,12 +25,14 @@ interface ReferenceManagerInterface
 
     /**
      * @param $name
+     *
      * @return mixed|null|object
      */
     public function getReference($name);
 
     /**
      * @param $name
+     *
      * @return bool
      */
     public function hasReference($name);
@@ -43,6 +45,7 @@ interface ReferenceManagerInterface
 
     /**
      * @param $name
+     *
      * @return bool
      */
     public function hasIdentity($name);

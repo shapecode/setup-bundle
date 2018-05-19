@@ -7,8 +7,9 @@ use Symfony\Component\Console\Command\Command;
 
 /**
  * Class CommandMeta
+ *
  * @package Shapecode\Bundle\SetupBundle\Model
- * @author Nikita Loges
+ * @author  Nikita Loges
  */
 class CommandMeta
 {
@@ -17,27 +18,21 @@ class CommandMeta
     protected $priority = 0;
 
     /** @var string */
-    protected $id;
+    protected $command;
 
     /** @var ArrayCollection */
     protected $arguments;
 
     /**
+     * @param         $priority
      * @param Command $command
-     * @param string $arguments
-     * @param integer $priority
+     * @param array   $arguments
      */
-    public function __construct(Command $command, $arguments, $priority)
+    public function __construct($priority, Command $command, $arguments)
     {
         $this->command = $command;
-        $this->arguments = new ArrayCollection();
         $this->priority = $priority;
-
-        $arguments = trim($arguments);
-        if (!empty($arguments)) {
-            $arguments = array_filter(array_map('trim', explode(' ', $arguments)), 'strlen');
-            $this->arguments = new ArrayCollection($arguments);
-        }
+        $this->arguments = $arguments;
     }
 
     /**
@@ -57,6 +52,20 @@ class CommandMeta
     }
 
     /**
+     * @return string
+     */
+    public function getFullCommand()
+    {
+        $command = $this->getCommand()->getName();
+
+        if (!empty($this->getArguments())) {
+            $command .= ' ' . $this->getArguments();
+        }
+
+        return $command;
+    }
+
+    /**
      * @return Command
      */
     public function getCommand()
@@ -73,7 +82,7 @@ class CommandMeta
     }
 
     /**
-     * @return ArrayCollection
+     * @return string
      */
     public function getArguments()
     {
@@ -81,9 +90,9 @@ class CommandMeta
     }
 
     /**
-     * @param ArrayCollection $arguments
+     * @param string $arguments
      */
-    protected function setArguments(ArrayCollection $arguments)
+    protected function setArguments($arguments)
     {
         $this->arguments = $arguments;
     }

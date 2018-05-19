@@ -6,54 +6,39 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Shapecode\Bundle\SetupBundle\Model\CommandMeta;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class SetupCommand
+ *
  * @package Shapecode\Bundle\SetupBundle\Command
- * @author Nikita Loges
- * @date 20.07.2015
+ * @author  Nikita Loges
  */
 class SetupCommand extends Command
 {
-
-    /** @var ContainerInterface */
-    protected $container;
 
     /** @var ArrayCollection|Command[] */
     protected $commands;
 
     /**
-     * @param null|string $name
-     * @param ContainerInterface $container
+     *
      */
-    public function __construct($name, ContainerInterface $container)
+    public function __construct()
     {
-        parent::__construct($name);
+        parent::__construct();
 
-        $this->container = $container;
         $this->commands = new ArrayCollection();
+        $this->setName('shapecode:setup');
     }
 
     /**
      * @inheritdoc
      */
     protected function configure()
-    {
-        $this->setDescription('Greet someone');
-
-        $this->configureOptions();
-    }
-
-    /**
-     *
-     */
-    protected function configureOptions()
     {
         $this->addOption('setup', null, InputOption::VALUE_REQUIRED, 'Which Setup should executed?', 'default');
         $this->addOption('force', null, InputOption::VALUE_NONE, 'Which Setup should executed?');
@@ -98,22 +83,11 @@ class SetupCommand extends Command
             $command = $meta->getCommand();
 
             $output->writeln('');
-            $output->writeln('execute command "'.$command->getName().'":');
+            $output->writeln('execute command "' . $command->getName() . '":');
 
-            $inputArray = array_replace_recursive($meta->getArguments()->toArray(), array(
-                'command' => $command->getName()
-            ));
-            $commandI = new ArrayInput($inputArray);
-            $command->run($commandI, $output);
+            $commandI = new StringInput($meta->getFullCommand());
+            $this->getApplication()->doRun($commandI, $output);
         }
-    }
-
-    /**
-     * @return ContainerInterface
-     */
-    public function getContainer()
-    {
-        return $this->container;
     }
 
     /**
@@ -134,6 +108,7 @@ class SetupCommand extends Command
 
     /**
      * @param $name
+     *
      * @return bool
      */
     public function hasCommandSet($name)
@@ -142,10 +117,10 @@ class SetupCommand extends Command
     }
 
     /**
-     * @param $name
+     * @param         $name
      * @param Command $command
-     * @param $arguments
-     * @param $priority
+     * @param         $arguments
+     * @param         $priority
      */
     public function addCommand($name, Command $command, $arguments, $priority)
     {
@@ -153,7 +128,7 @@ class SetupCommand extends Command
             $this->commands->set($name, new ArrayCollection());
         }
 
-        $meta = new CommandMeta($command, $arguments, $priority);
+        $meta = new CommandMeta($priority, $command, $arguments);
 
         $this->commands->get($name)->add($meta);
     }

@@ -3,13 +3,15 @@
 namespace Shapecode\Bundle\SetupBundle\Setup;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
 
 /**
  * Class ReferenceManager
+ *
  * @package Shapecode\Bundle\SetupBundle\Setup
- * @author Nikita Loges
+ * @author  Nikita Loges
  */
 class ReferenceManager implements ReferenceManagerInterface
 {
@@ -24,11 +26,12 @@ class ReferenceManager implements ReferenceManagerInterface
     protected $manager;
 
     /**
-     * @param EntityManagerInterface $manager
+     * @param ManagerRegistry $registry
      */
-    public function __construct(EntityManagerInterface $manager)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->manager = $manager;
+        $this->manager = $registry->getManager();
+
         $this->references = new ArrayCollection();
         $this->identities = new ArrayCollection();
     }
@@ -116,6 +119,7 @@ class ReferenceManager implements ReferenceManagerInterface
 
     /**
      * @param $name
+     *
      * @return mixed|null
      */
     protected function getIdentity($name)
@@ -140,8 +144,9 @@ class ReferenceManager implements ReferenceManagerInterface
     }
 
     /**
-     * @param object $reference
+     * @param object     $reference
      * @param UnitOfWork $uow
+     *
      * @return array
      */
     protected function getIdentifier($reference, UnitOfWork $uow)

@@ -2,38 +2,47 @@
 
 namespace Shapecode\Bundle\SetupBundle\Command\Setup;
 
+use Doctrine\Common\Persistence\ManagerRegistry;
+use Shapecode\Bundle\SetupBundle\Setup\ReferenceManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class AbstractSetup
+ *
  * @package Shapecode\Bundle\SetupBundle\Command\Setup
- * @author Nikita Loges
- * @date 20.07.2015
+ * @author  Nikita Loges
  */
-class AbstractSetup extends Command implements SetupInterface
+abstract class AbstractSetup extends Command implements SetupInterface
 {
 
-    /** @var ContainerInterface */
-    protected $container;
+    /** @var ManagerRegistry */
+    protected $registry;
+
+    /** @var ReferenceManagerInterface */
+    protected $referenceManager;
 
     /**
-     * @param null|string $name
-     * @param ContainerInterface $container
+     * @param ManagerRegistry $registry
      */
-    public function __construct($name, ContainerInterface $container)
+    public function setRegistry(ManagerRegistry $registry)
     {
-        parent::__construct($name);
-
-        $this->container = $container;
+        $this->registry = $registry;
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManager
+     * @param ReferenceManagerInterface $referenceManager
+     */
+    public function setReferenceManager(ReferenceManagerInterface $referenceManager)
+    {
+        $this->referenceManager = $referenceManager;
+    }
+
+    /**
+     * @return \Doctrine\Common\Persistence\ObjectManager
      */
     protected function getManager()
     {
-        return $this->container->get('doctrine.orm.entity_manager');
+        return $this->registry->getManager();
     }
 
     /**
@@ -41,7 +50,7 @@ class AbstractSetup extends Command implements SetupInterface
      */
     protected function getReferenceManager()
     {
-        return $this->container->get('shapecode_setup.reference_manager');
+        return $this->referenceManager;
     }
 
     /**
@@ -64,6 +73,7 @@ class AbstractSetup extends Command implements SetupInterface
 
     /**
      * @param string $name
+     *
      * @return object
      */
     public function getReference($name)
@@ -74,6 +84,7 @@ class AbstractSetup extends Command implements SetupInterface
     /**
      *
      * @param string $name
+     *
      * @return boolean
      */
     public function hasReference($name)
