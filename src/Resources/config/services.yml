@@ -1,15 +1,9 @@
 services:
-    shapecode_setup.command.setup:
-        class: Shapecode\Bundle\SetupBundle\Command\SetupCommand
-        tags:
-            -  { name: console.command }
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
 
-    shapecode_setup.reference_manager:
-        class: Shapecode\Bundle\SetupBundle\Setup\ReferenceManager
-        arguments: ["@doctrine"]
-
-    shapecode_setup.abstrat_setup:
-        abstract: true
-        calls:
-            - ['setRegistry', ['@doctrine']]
-            - ['setReferenceManager', ['@shapecode_setup.reference_manager']]
+    Shapecode\Bundle\SetupBundle\Command\SetupCommand: ~
+    Shapecode\Bundle\SetupBundle\Setup\ReferenceManager: ~
+    Shapecode\Bundle\SetupBundle\Setup\ReferenceManagerInterface: '@Shapecode\Bundle\SetupBundle\Setup\ReferenceManager'

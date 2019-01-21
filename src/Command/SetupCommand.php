@@ -6,10 +6,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Shapecode\Bundle\SetupBundle\Model\CommandMeta;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
 /**
@@ -29,10 +31,9 @@ class SetupCommand extends Command
      */
     public function __construct()
     {
-        parent::__construct();
-
         $this->commands = new ArrayCollection();
-        $this->setName('shapecode:setup');
+
+        parent::__construct();
     }
 
     /**
@@ -40,7 +41,9 @@ class SetupCommand extends Command
      */
     protected function configure()
     {
-        $this->addOption('setup', null, InputOption::VALUE_REQUIRED, 'Which Setup should executed?', 'default');
+        $this->setName('shapecode:setup');
+
+        $this->addArgument('setup', InputArgument::OPTIONAL, 'Which Setup should executed?', 'default');
         $this->addOption('force', null, InputOption::VALUE_NONE, 'Which Setup should executed?');
     }
 
@@ -49,7 +52,7 @@ class SetupCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $input->getOption('setup');
+        $name = $input->getArgument('setup');
         $force = $input->getOption('force');
 
         if (!$this->hasCommandSet($name) || !$this->getCommandSet($name)->count()) {
@@ -64,11 +67,11 @@ class SetupCommand extends Command
         $helper = $this->getHelperSet()->get('question');
 
         if (!$force) {
-            $question = new Question('Do you want to fire up setup? (y/n)');
-            $yesno = $helper->ask($input, $output, $question);
+            $question = new ConfirmationQuestion('Do you want to fire up setup?', false);
 
-            if ($yesno != 'y') {
+            if (!$helper->ask($input, $output, $question)) {
                 $output->writeln('exiting ...');
+                exit;
             }
         }
 

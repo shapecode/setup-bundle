@@ -22,6 +22,18 @@ abstract class AbstractSetup extends Command implements SetupInterface
     protected $referenceManager;
 
     /**
+     * @param ManagerRegistry           $registry
+     * @param ReferenceManagerInterface $referenceManager
+     */
+    public function __construct(ManagerRegistry $registry, ReferenceManagerInterface $referenceManager)
+    {
+        $this->registry = $registry;
+        $this->referenceManager = $referenceManager;
+
+        parent::__construct();
+    }
+
+    /**
      * @param ManagerRegistry $registry
      */
     public function setRegistry(ManagerRegistry $registry)
